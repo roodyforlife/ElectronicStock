@@ -37,6 +37,8 @@ namespace ElectronicStock.Controllers
             }
 
             var shopCard = await _context.ShopCards
+                .Include(x => x.User)
+                .Include(x => x.Cards).ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(m => m.ShopCardId == id);
             if (shopCard == null)
             {
