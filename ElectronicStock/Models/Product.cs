@@ -30,6 +30,7 @@ namespace ElectronicStock.Models
         public DateTime CreateDate { get; set; } = DateTime.Now;
         [Display(Name = "Available credit")]
         public bool CreditAvailable { get; set; }
+        public List<ProductCategory> productCategories { get; set; }
 
     }
 }

@@ -14,5 +14,6 @@ namespace ElectronicStock.Models
         public string Name { get; set; }
         [Display(Name = "Date created")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
+        public List<ProductCategory> productCategories { get; set; }
     }
 }

@@ -10,37 +10,37 @@
     <h4>Product</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ProductTitle)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.ProductTitle)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Cost)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Cost)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Quantity)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Quantity)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Discount)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Discount)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Image)
         </dt>
         <dd class="col-sm-10">
@@ -48,16 +48,16 @@
                 <img style='width: 100%; height: 100%; object-fit: contain;' src="data:image/jpeg;base64,@(Convert.ToBase64String(Model.Image))" />
             </div>
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreateDate)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreateDate)
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.CreditAvailable)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.CreditAvailable)
         </dd>
     </dl>
@@ -66,3 +66,38 @@
     <a asp-action="Edit" asp-route-id="@Model.ProductId">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+<h4 class="mt-3">Categories of product</h4>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.productCategories.First().Category)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.productCategories.First().CreateDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.productCategories)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.CreateDate)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.CategoryId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.CategoryId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.CategoryId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
