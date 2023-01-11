@@ -10,16 +10,19 @@ using ElectronicStock.Models;
 using ElectronicStock.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using Microsoft.AspNetCore.Identity;
 
 namespace ElectronicStock.Controllers
 {
     public class ShopCardsController : Controller
     {
         private readonly DataContext _context;
+        private readonly UserManager<User> _userManager;
 
-        public ShopCardsController(DataContext context)
+        public ShopCardsController(DataContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: ShopCards
@@ -62,6 +65,12 @@ namespace ElectronicStock.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ShopCardId,CreateDate,UserId,Status")] ShopCard shopCard)
         {
+            var userShopCards = _context.ShopCards.Where(x => x.UserId == shopCard.UserId && x.Status == "basket").ToList();
+            if(userShopCards.Count != 0 && shopCard.Status == "basket")
+            {
+                ModelState.AddModelError("Status", "User already has shop card with status 'basket'");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(shopCard);
@@ -99,6 +108,12 @@ namespace ElectronicStock.Controllers
             if (id != shopCard.ShopCardId)
             {
                 return NotFound();
+            }
+
+            var userShopCards = _context.ShopCards.Where(x => x.UserId == shopCard.UserId && x.Status == "basket");
+            if (userShopCards != null && shopCard.Status == "basket")
+            {
+                ModelState.AddModelError("Status", "User already has shop card with status 'basket'");
             }
 
             if (ModelState.IsValid)

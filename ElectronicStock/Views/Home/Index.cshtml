@@ -3,6 +3,28 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h2>Requests</h2>
+    <div style="width: 300px; border: 1px solid #aaa; margin: 0 auto; border-radius: 5px;" class="mt-3 mb-3 p-2">
+        <form asp-action="Request" asp-controller="Home" method="post">
+            <div class="form-group">
+                <input name="request" type="text" class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Request" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+    <div class="form-group">
+        <a asp-action="Request" asp-controller="Home" asp-route-request="Select ShopCards.ShopCardId, ShopCards.CreateDate, ShopCards.UserId, Email, Status, SUM(Cards.Quantity) as Quantity_of_products_in_shop_card from ShopCards
+join Cards on Cards.ShopCardId = ShopCards.ShopCardId
+join AspNetUsers on AspNetUsers.Id = ShopCards.UserId
+group by ShopCards.ShopCardId, ShopCards.CreateDate, ShopCards.UserId, Status, Email" class="btn btn-primary">Запит на отримання замовлень користувачів в результаті чого буде виведено номер замовлення, дата створення (редагування) замовлення, ідентифікатор користвача, електронна пошта користвача, кількість замовлених товарів у даному замовлені</a>
+    </div>
+    <div class="form-group">
+        <a asp-action="Request" asp-controller="Home" asp-route-request="select ProductTitle, Description, Products.CreateDate, Products.Quantity, Count(CardId) as Number_of_orders_for_this_product from Products
+join Cards on Cards.ProductId = Products.ProductId
+join ShopCards on ShopCards.ShopCardId = Cards.ShopCardId
+where Status = 'delivered'
+group by ProductTitle, Description, Products.CreateDate, Products.Quantity" class="btn btn-primary">Запит на отримання товарів в результаті чого буде виведено назву товару, опис, дата створення, кількість на складі, а також кількість доставок даного товару</a>
+    </div>
 </div>
