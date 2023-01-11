@@ -7,6 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ElectronicStock.BaseContext;
 using ElectronicStock.Models;
+using Microsoft.AspNetCore.Http;
+using System.IO;
+using ElectronicStock.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace ElectronicStock.Controllers
 {
@@ -20,9 +25,60 @@ namespace ElectronicStock.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string title, int costFrom, int costTo, ProductSort sort = ProductSort.TitleAsc)
         {
-            return View(await _context.Products.ToListAsync());
+            IQueryable<Product> products = _context.Products;
+
+            if(!String.IsNullOrEmpty(title))
+            {
+                products = products.Where(x => x.ProductTitle.Contains(title));
+            }
+
+            products = products.Where(x => x.Cost >= costFrom);
+
+            if(costTo != 0)
+            {
+                products = products.Where(x => x.Cost <= costTo);
+            }
+
+            switch (sort)
+            {
+                case ProductSort.TitleDesc:
+                    products = products.OrderByDescending(x => x.ProductTitle);
+                    break;
+                case ProductSort.CostAsc:
+                    products = products.OrderBy(x => x.Cost);
+                    break;
+                case ProductSort.CostDesc:
+                    products = products.OrderByDescending(x => x.Cost);
+                    break;
+                case ProductSort.DateAsc:
+                    products = products.OrderBy(x => x.CreateDate);
+                    break;
+                case ProductSort.DateDesc:
+                    products = products.OrderByDescending(x => x.CreateDate);
+                    break;
+                default:
+                    products = products.OrderBy(x => x.ProductTitle);
+                    break;
+            }
+
+            ViewBag.Sort = (List<SelectListItem>)Enum.GetValues(typeof(ProductSort)).Cast<ProductSort>()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.GetType()
+            .GetMember(x.ToString())
+            .FirstOrDefault()
+            .GetCustomAttribute<DisplayAttribute>()?
+            .GetName(),
+                    Value = x.ToString(),
+                    Selected = (x == sort)
+                }).ToList();
+
+            ViewBag.Title = title;
+            ViewBag.CostFrom = costFrom;
+            ViewBag.CostTo = costTo;
+            return View();
         }
 
         // GET: Products/Details/5
@@ -54,8 +110,24 @@ namespace ElectronicStock.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductTitle,Description,Cost,Quantity,Discount,Image,CreateDate,CreditAvailable")] Product product)
+        public async Task<IActionResult> Create([Bind("ProductId,ProductTitle,Description,Cost,Quantity,Discount,CreateDate,CreditAvailable")] Product product,
+            IFormFile image)
         {
+            if (image != null)
+            {
+                byte[] imageData = null;
+                using (var binaryReader = new BinaryReader(image.OpenReadStream()))
+                {
+                    imageData = binaryReader.ReadBytes((int)image.Length);
+                }
+
+                product.Image = imageData;
+            }
+            else
+            {
+                ModelState.AddModelError("Image", "Upload image");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(product);
@@ -86,7 +158,7 @@ namespace ElectronicStock.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductTitle,Description,Cost,Quantity,Discount,Image,CreateDate,CreditAvailable")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductTitle,Description,Cost,Quantity,Discount,CreateDate,CreditAvailable")] Product product)
         {
             if (id != product.ProductId)
             {
@@ -97,7 +169,14 @@ namespace ElectronicStock.Controllers
             {
                 try
                 {
-                    _context.Update(product);
+                    Product newProduct = _context.Products.FirstOrDefault(x => x.ProductId == id);
+                    newProduct.ProductTitle = product.ProductTitle;
+                    newProduct.Description = product.Description;
+                    newProduct.Cost = product.Cost;
+                    newProduct.Quantity = product.Quantity;
+                    newProduct.Discount = product.Discount;
+                    newProduct.CreditAvailable = product.CreditAvailable;
+                    // _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

@@ -15,6 +15,7 @@ namespace ElectronicStock.Models
         public int ShopCardId { get; set; }
         public Product Product { get; set; }
         public int ProductId { get; set; }
+        [Required(ErrorMessage = "Empty field")]
         public int Quantity { get; set; }
     }
 }

@@ -4,7 +4,38 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Products</h1>
+
+<form asp-action="Index" method="post">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">Title</span>
+        </div>
+        <input type="text" class="form-control" aria-label="Default" value="@ViewBag.Title" name="title" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">Cost From</span>
+        </div>
+        <input type="number" class="form-control" aria-label="Default" value="@ViewBag.CostFrom" name="costFrom" aria-describedby="inputGroup-sizing-default">
+        <div class="input-group-prepend ml-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Cost To</span>
+        </div>
+        <input type="number" class="form-control" value="@ViewBag.CostTo" aria-label="Default" name="costTo" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">Sorting</label>
+        </div>
+        <select class="custom-select" asp-items="ViewBag.Sort" name="sort" id="inputGroupSelect01"></select>
+    </div>
+
+    <div class="input-group mb-3">
+        <input type="submit" value="Search..." class="btn btn-primary" />
+    </div>
+</form>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -58,7 +89,9 @@
                 @Html.DisplayFor(modelItem => item.Discount)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Image)
+                <div style="width: 75px; height: 75px; ">
+                    <img style='width: 100%; height: 100%; object-fit: contain;' src="data:image/jpeg;base64,@(Convert.ToBase64String(item.Image))" />
+                </div>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreateDate)
