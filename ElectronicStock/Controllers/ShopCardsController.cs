@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ElectronicStock.BaseContext;
 using ElectronicStock.Models;
+using ElectronicStock.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace ElectronicStock.Controllers
 {
@@ -46,6 +49,7 @@ namespace ElectronicStock.Controllers
         // GET: ShopCards/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
             return View();
         }
 
@@ -62,6 +66,8 @@ namespace ElectronicStock.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", shopCard.UserId);
             return View(shopCard);
         }
 

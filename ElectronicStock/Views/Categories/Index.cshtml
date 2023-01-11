@@ -4,7 +4,38 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Categories</h1>
+
+<form asp-action="Index" method="post">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">Category name</span>
+        </div>
+        <input type="text" class="form-control" aria-label="Default" value="@ViewBag.Name" name="name" aria-describedby="inputGroup-sizing-default">       
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">Create date from</span>
+        </div>
+        <input type="date" class="form-control" aria-label="Default" value="@ViewBag.DateFrom.ToString("yyyy-MM-dd")" name="dateFrom" aria-describedby="inputGroup-sizing-default">
+        <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">Create date to</span>
+        </div>
+        <input type="date" class="form-control" aria-label="Default" value="@ViewBag.DateTo.ToString("yyyy-MM-dd")" name="dateTo" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelect01">Sorting</label>
+        </div>
+        <select class="custom-select" asp-items="ViewBag.Sort" name="sort" id="inputGroupSelect01"></select>
+    </div>
+
+    <div class="input-group mb-3">
+        <input type="submit" value="Search..." class="btn btn-primary" />
+    </div>
+</form>
 
 <p>
     <a asp-action="Create">Create New</a>

@@ -49,8 +49,8 @@ namespace ElectronicStock.Controllers
         // GET: ProductCategories/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId");
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name");
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle");
             return View();
         }
 
@@ -67,8 +67,8 @@ namespace ElectronicStock.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", productCategory.CategoryId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", productCategory.ProductId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", productCategory.CategoryId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", productCategory.ProductId);
             return View(productCategory);
         }
 
@@ -85,8 +85,8 @@ namespace ElectronicStock.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", productCategory.CategoryId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", productCategory.ProductId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", productCategory.CategoryId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", productCategory.ProductId);
             return View(productCategory);
         }
 
@@ -122,8 +122,8 @@ namespace ElectronicStock.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "CategoryId", productCategory.CategoryId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", productCategory.ProductId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "CategoryId", "Name", productCategory.CategoryId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", productCategory.ProductId);
             return View(productCategory);
         }
 

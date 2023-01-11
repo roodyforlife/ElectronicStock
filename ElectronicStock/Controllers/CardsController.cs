@@ -49,7 +49,7 @@ namespace ElectronicStock.Controllers
         // GET: Cards/Create
         public IActionResult Create()
         {
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId");
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle");
             ViewData["ShopCardId"] = new SelectList(_context.ShopCards, "ShopCardId", "ShopCardId");
             return View();
         }
@@ -67,7 +67,7 @@ namespace ElectronicStock.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", card.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", card.ProductId);
             ViewData["ShopCardId"] = new SelectList(_context.ShopCards, "ShopCardId", "ShopCardId", card.ShopCardId);
             return View(card);
         }
@@ -85,7 +85,7 @@ namespace ElectronicStock.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", card.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", card.ProductId);
             ViewData["ShopCardId"] = new SelectList(_context.ShopCards, "ShopCardId", "ShopCardId", card.ShopCardId);
             return View(card);
         }
@@ -122,7 +122,7 @@ namespace ElectronicStock.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", card.ProductId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", card.ProductId);
             ViewData["ShopCardId"] = new SelectList(_context.ShopCards, "ShopCardId", "ShopCardId", card.ShopCardId);
             return View(card);
         }

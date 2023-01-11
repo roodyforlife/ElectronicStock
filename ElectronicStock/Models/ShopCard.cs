@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElectronicStock.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace ElectronicStock.Models
         [Display(Name = "Date created")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
         public User User { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         [Display(Name = "Cart status")]
-        public int Status { get; set; }
+        public string Status { get; set; }
         public List<Card> Cards { get; set; }
     }
 }

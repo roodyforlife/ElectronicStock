@@ -75,10 +75,10 @@ namespace ElectronicStock.Controllers
                     Selected = (x == sort)
                 }).ToList();
 
-            ViewBag.Title = title;
+            ViewBag.ProductTitle = title;
             ViewBag.CostFrom = costFrom;
             ViewBag.CostTo = costTo;
-            return View();
+            return View(await products.ToListAsync());
         }
 
         // GET: Products/Details/5

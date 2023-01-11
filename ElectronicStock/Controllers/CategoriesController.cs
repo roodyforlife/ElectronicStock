@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ElectronicStock.BaseContext;
 using ElectronicStock.Models;
+using ElectronicStock.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace ElectronicStock.Controllers
 {
@@ -20,9 +23,55 @@ namespace ElectronicStock.Controllers
         }
 
         // GET: Categories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string name, DateTime dateFrom, DateTime dateTo, CategorySort sort = CategorySort.NameAsc)
         {
-            return View(await _context.Categories.ToListAsync());
+            IQueryable<Category> categories = _context.Categories;
+
+            if(!String.IsNullOrEmpty(name))
+            {
+                categories = categories.Where(x => x.Name.Contains(name));
+            }
+
+            categories = categories.Where(x => x.CreateDate >= dateFrom);
+
+            if(dateTo.Year != 1)
+            {
+                categories = categories.Where(x => x.CreateDate <= dateTo);
+            }
+
+            switch (sort)
+            {
+                case CategorySort.NameDesc:
+                    categories = categories.OrderByDescending(x => x.Name);
+                    break;
+                case CategorySort.DateAsc:
+                    categories = categories.OrderBy(x => x.CreateDate);
+                    break;
+                case CategorySort.DateDesc:
+                    categories = categories.OrderByDescending(x => x.CreateDate);
+                    break;
+                default:
+                    categories = categories.OrderBy(x => x.Name);
+                    break;
+            }
+
+            ViewBag.Sort = (List<SelectListItem>)Enum.GetValues(typeof(CategorySort)).Cast<CategorySort>()
+                .Select(x => new SelectListItem
+                {
+                    Text = x.GetType()
+            .GetMember(x.ToString())
+            .FirstOrDefault()
+            .GetCustomAttribute<DisplayAttribute>()?
+            .GetName(),
+                    Value = x.ToString(),
+                    Selected = (x == sort)
+                }).ToList();
+
+            ViewBag.Name = name;
+            ViewBag.DateFrom = dateFrom;
+            ViewBag.DateTo = dateTo;
+
+            return View(await categories.ToListAsync());
         }
 
         // GET: Categories/Details/5

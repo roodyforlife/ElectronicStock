@@ -49,8 +49,8 @@ namespace ElectronicStock.Controllers
         // GET: DeliveryMethodProducts/Create
         public IActionResult Create()
         {
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "DeliveryMethodId");
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId");
+            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName");
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle");
             return View();
         }
 
@@ -67,8 +67,8 @@ namespace ElectronicStock.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "DeliveryMethodId", deliveryMethodProduct.DeliveryMethodId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", deliveryMethodProduct.ProductId);
+            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName", deliveryMethodProduct.DeliveryMethodId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", deliveryMethodProduct.ProductId);
             return View(deliveryMethodProduct);
         }
 
@@ -85,8 +85,8 @@ namespace ElectronicStock.Controllers
             {
                 return NotFound();
             }
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "DeliveryMethodId", deliveryMethodProduct.DeliveryMethodId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", deliveryMethodProduct.ProductId);
+            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName", deliveryMethodProduct.DeliveryMethodId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", deliveryMethodProduct.ProductId);
             return View(deliveryMethodProduct);
         }
 
@@ -122,8 +122,8 @@ namespace ElectronicStock.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "DeliveryMethodId", deliveryMethodProduct.DeliveryMethodId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductId", deliveryMethodProduct.ProductId);
+            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName", deliveryMethodProduct.DeliveryMethodId);
+            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", deliveryMethodProduct.ProductId);
             return View(deliveryMethodProduct);
         }
 
