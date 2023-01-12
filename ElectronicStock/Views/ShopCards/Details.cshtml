@@ -56,6 +56,9 @@
                 @Html.DisplayNameFor(model => model.Cards.First().Product.Cost)
             </th>
             <th>
+                Quantity in shoping card
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Cards.First().Product.Quantity)
             </th>
             <th>
@@ -75,34 +78,37 @@
     <tbody>
         @foreach (var item in Model.Cards)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.ProductTitle)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Description)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Cost)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Quantity)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.Discount)
-                </td>
-                <td>
-                    <div style="width: 75px; height: 75px; ">
-                        <img style='width: 100%; height: 100%; object-fit: contain;' src="data:image/jpeg;base64,@(Convert.ToBase64String(item.Product.Image))" />
-                    </div>
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.CreateDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Product.CreditAvailable)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.ProductTitle)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Cost)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Discount)
+            </td>
+            <td>
+                <div style="width: 75px; height: 75px; ">
+                    <img style='width: 100%; height: 100%; object-fit: contain;' src="data:image/jpeg;base64,@(Convert.ToBase64String(item.Product.Image))" />
+                </div>
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.CreditAvailable)
+            </td>
+        </tr>
         }
     </tbody>
 </table>

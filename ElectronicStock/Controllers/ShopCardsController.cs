@@ -28,6 +28,17 @@ namespace ElectronicStock.Controllers
         // GET: ShopCards
         public async Task<IActionResult> Index()
         {
+            // Automation
+            List<User> users = await _userManager.Users.Include(x => x.ShopCards).ToListAsync();
+            foreach(User user in users)
+            {
+                if (user.ShopCards.Where(x => x.Status == "basket").ToList().Count() == 0)
+                {
+                    _context.Add(new ShopCard() { UserId = user.Id, Status = "basket"});
+                    await _context.SaveChangesAsync();
+                }
+            }
+
             return View(await _context.ShopCards.ToListAsync());
         }
 
