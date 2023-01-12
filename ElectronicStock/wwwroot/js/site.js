@@ -1,4 +1,38 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function createPDF() {
+    var sTable = $('#print').html()
+    var style = "<style>";
+    style = style + "table {width: 100%;font: 17px Calibri;}";
+    style = style + "table, th, td {border: solid 1px #DDD; border-collapse: collapse;";
+    style = style + "padding: 2px 3px;text-align: center;}";
+    style += Styles();
+    style = style + ".createPdfBlock {display: none;}";
+    style = style + "</style>";
 
-// Write your JavaScript code.
+    var win = window.open('', '', 'height=700,width=700');
+    win.document.write('<html><head>');
+    win.document.write(`<title>Report</title>`);
+    win.document.write(style);
+    win.document.write('</head>');
+    win.document.write('<body>');
+    win.document.write(`<h1 style='text-align: center;'>Report</h1>`);
+    win.document.write(sTable);
+    win.document.write('</body></html>');
+    win.document.close();
+    win.print();
+}
+
+function Styles() {
+    var CSSFile;
+    var rawFile = new XMLHttpRequest();
+    rawFile.open("GET", `/lib/bootstrap/dist/css/bootstrap.css`, false);
+    rawFile.onreadystatechange = function () {
+        if (rawFile.readyState === 4) {
+            if (rawFile.status === 200) {
+                CSSFile = rawFile.responseText;
+            }
+        }
+    }
+
+    rawFile.send(null);
+    return CSSFile;
+}

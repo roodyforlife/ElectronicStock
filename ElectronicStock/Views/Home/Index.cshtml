@@ -27,4 +27,7 @@ join ShopCards on ShopCards.ShopCardId = Cards.ShopCardId
 where Status = 'delivered'
 group by ProductTitle, Description, Products.CreateDate, Products.Quantity" class="btn btn-primary">Запит на отримання товарів в результаті чого буде виведено назву товару, опис, дата створення, кількість на складі, а також кількість доставок даного товару</a>
     </div>
+    <div class="form-group">
+        <a asp-action="Request" asp-controller="Home" asp-route-request="Select Id, Email, CONCAT(Surname,' ',Name , ' ',  Patronymic) as ПIБ, BirthdayDate, DATEDIFF(year, BirthdayDate, GETDATE()) as Age from AspNetUsers" class="btn btn-primary">Запит на отримання користувачів, де буде виведено ідентифікатор користвача, електронна пошта, ПІБ, дата народження та вік користвача (це буде підраховуватися)</a>
+    </div>
 </div>

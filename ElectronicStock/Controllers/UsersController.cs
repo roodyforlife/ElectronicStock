@@ -18,17 +18,20 @@ namespace ElectronicStock.Controllers
     {
         private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public UsersController(DataContext context, UserManager<User> userManager)
+        public UsersController(DataContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         // GET: Users
         public async Task<IActionResult> Index(string patronymic, string name, string surname, string email, string gender, UserSort sort = UserSort.EmailAsc)
         {
             IQueryable<User> users = _userManager.Users;
+
             if (!String.IsNullOrEmpty(patronymic))
             {
                 users = users.Where(x => x.Patronymic.Contains(patronymic));
@@ -154,14 +157,14 @@ namespace ElectronicStock.Controllers
                 return NotFound();
             }
 
-            var testUser = await _context.Users
+            var user = await _context.Users
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (testUser == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
-            return View(testUser);
+            return View(user);
         }
 
         // POST: Users/Delete/5
@@ -169,8 +172,8 @@ namespace ElectronicStock.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var testUser = await _context.Users.FindAsync(id);
-            _context.Users.Remove(testUser);
+            var user = await _context.Users.FindAsync(id);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
