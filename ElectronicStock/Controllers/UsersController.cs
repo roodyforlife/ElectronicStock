@@ -173,6 +173,8 @@ namespace ElectronicStock.Controllers
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var user = await _context.Users.FindAsync(id);
+            var shopCards = _context.ShopCards.Where(x => x.UserId == user.Id);
+            _context.ShopCards.RemoveRange(shopCards);
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

@@ -39,7 +39,7 @@ namespace ElectronicStock.Controllers
                 }
             }
 
-            return View(await _context.ShopCards.ToListAsync());
+            return View(await _context.ShopCards.Include(x => x.User).ToListAsync());
         }
 
         // GET: ShopCards/Details/5
