@@ -21,17 +21,17 @@ join AspNetUsers on AspNetUsers.Id = ShopCards.UserId
 group by ShopCards.ShopCardId, ShopCards.CreateDate, ShopCards.UserId, Status, Email" class="btn btn-primary">Запит на отримання замовлень користувачів в результаті чого буде виведено номер замовлення, дата створення (редагування) замовлення, ідентифікатор користвача, електронна пошта користвача, кількість замовлених товарів у даному замовлені</a>
     </div>
     <div class="form-group">
-        <a asp-action="Request" asp-controller="Home" asp-route-request="select ProductTitle, Description, Products.CreateDate, Products.Quantity, Count(CardId) as Number_of_orders_for_this_product from Products
-join Cards on Cards.ProductId = Products.ProductId
-join ShopCards on ShopCards.ShopCardId = Cards.ShopCardId
-where Status = 'delivered'
-group by ProductTitle, Description, Products.CreateDate, Products.Quantity" class="btn btn-primary">Запит на отримання товарів в результаті чого буде виведено назву товару, опис, дата створення, кількість на складі, а також кількість доставок даного товару</a>
+        <a asp-action="Request" asp-controller="Home" asp-route-request="select ProductTitle, Description, Products.CreateDate, SUM(Rows.Quantity) as Quantity, COUNT(CardId) as Number_of_orders_for_this_product from Products
+left join Rows on Rows.ProductId = Products.ProductId
+left join Cards on Cards.ProductId = Products.ProductId
+left join ShopCards on ShopCards.ShopCardId = Cards.ShopCardId
+group by ProductTitle, Description, Products.CreateDate" class="btn btn-primary">Запит на отримання товарів в результаті чого буде виведено назву товару, опис, дата створення, кількість на складі, а також кількість замовлень даного товару</a>
     </div>
     <div class="form-group">
         <a asp-action="Request" asp-controller="Home" asp-route-request="Select Id, Email, CONCAT(Surname,' ',Name , ' ',  Patronymic) as ПIБ, BirthdayDate, DATEDIFF(year, BirthdayDate, GETDATE()) as Age from AspNetUsers" class="btn btn-primary">Запит на отримання користувачів, де буде виведено ідентифікатор користвача, електронна пошта, ПІБ, дата народження та вік користвача (це буде підраховуватися)</a>
     </div>
     <div class="form-group">
-        <a asp-action="Request" asp-controller="Home" asp-route-request="select ShopCards.ShopCardId, ShopCards.CreateDate, Status, CONCAT(Name, ' ', Surname, ' ', Patronymic) as ПIБ, Email, SUM(Cards.Quantity * Products.Cost) as Final_price from ShopCards
+        <a asp-action="Request" asp-controller="Home" asp-route-request="select ShopCards.ShopCardId, ShopCards.CreateDate, Status, CONCAT(Name, ' ', Surname, ' ', Patronymic) as ПIБ, Email, SUM(Cards.Quantity * (Products.Cost - Products.Discount)) as Final_price from ShopCards
 left join Cards on ShopCards.ShopCardId = Cards.ShopCardId
 left join Products on Products.ProductId = Cards.ProductId
 left join AspNetUsers on AspNetUsers.Id = ShopCards.UserId

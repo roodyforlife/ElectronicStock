@@ -27,7 +27,8 @@ namespace ElectronicStock.Controllers
         // GET: Products
         public async Task<IActionResult> Index(string title, int costFrom, int costTo, ProductSort sort = ProductSort.TitleAsc)
         {
-            IQueryable<Product> products = _context.Products.Include(x => x.productCategories).ThenInclude(x => x.Category);
+            IQueryable<Product> products = _context.Products.Include(x => x.productCategories).ThenInclude(x => x.Category)
+                .Include(x => x.Rows);
 
             if(!String.IsNullOrEmpty(title))
             {
