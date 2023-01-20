@@ -22,7 +22,7 @@ namespace ElectronicStock.Controllers
         {
             try
             {
-                string connectionString = $"Server=DESKTOP-KIV92L3;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;";
+                string connectionString = $"Server=DESKTOP-I75L3P7;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;";
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
