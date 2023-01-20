@@ -39,5 +39,6 @@ namespace ElectronicStock.Models
         public string StorageConditions { get; set; }
         public List<ProductCategory> productCategories { get; set; }
         public List<Row> Rows { get; set; }
+        public List<Card> Cards { get; set; }
     }
 }

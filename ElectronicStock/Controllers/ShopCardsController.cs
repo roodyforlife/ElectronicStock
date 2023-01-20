@@ -127,6 +127,38 @@ namespace ElectronicStock.Controllers
                 ModelState.AddModelError("Status", "User already has shop card with status 'basket'");
             }
 
+            if(shopCard.Status == "delivered")
+            {
+                var cards = _context.Cards.Include(x => x.Product).ThenInclude(x => x.Rows).Where(x => x.ShopCardId == shopCard.ShopCardId);
+                foreach (Card card in cards)
+                {
+                    int quantity = card.Quantity;
+                    foreach (Row row in card.Product.Rows)
+                    {
+                        int savingQuantity = row.Quantity;
+                        savingQuantity -= quantity;
+                        if (savingQuantity > 0)
+                        {
+                            quantity = row.Quantity - quantity;
+                            row.Quantity = savingQuantity;
+                            _context.Rows.Update(row);
+                        }
+                        else
+                        {
+                            quantity = Math.Abs(row.Quantity);
+                            _context.Remove(row);
+                        }
+                    }
+
+                    if (quantity == 0)
+                    {
+                        break;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+
             if (ModelState.IsValid)
             {
                 try
