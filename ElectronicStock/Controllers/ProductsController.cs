@@ -91,6 +91,7 @@ namespace ElectronicStock.Controllers
 
             var product = await _context.Products
                 .Include(x => x.productCategories).ThenInclude(x => x.Category)
+                .Include(x => x.Rows)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
             if (product == null)
             {

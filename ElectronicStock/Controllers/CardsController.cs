@@ -61,6 +61,12 @@ namespace ElectronicStock.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CardId,DateAdded,ShopCardId,ProductId,Quantity")] Card card)
         {
+            Product products = _context.Products.Include(x => x.Rows).FirstOrDefault(x => x.ProductId == card.ProductId);
+            if (products.Rows.Sum(x => x.Quantity) < card.Quantity)
+            {
+                ModelState.AddModelError("Quantity", "There are not so many goods in stock");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(card);
@@ -100,6 +106,12 @@ namespace ElectronicStock.Controllers
             if (id != card.CardId)
             {
                 return NotFound();
+            }
+
+            Product products = _context.Products.Include(x => x.Rows).FirstOrDefault(x => x.ProductId == card.ProductId);
+            if (products.Rows.Sum(x => x.Quantity) < card.Quantity)
+            {
+                ModelState.AddModelError("Quantity", "There are not so many goods in stock");
             }
 
             if (ModelState.IsValid)
