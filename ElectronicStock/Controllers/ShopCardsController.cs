@@ -129,7 +129,7 @@ namespace ElectronicStock.Controllers
 
             if(shopCard.Status == "delivered")
             {
-                var cards = _context.Cards.Include(x => x.Product).ThenInclude(x => x.Rows).Where(x => x.ShopCardId == shopCard.ShopCardId);
+                var cards = _context.Cards.Include(x => x.Product).ThenInclude(x => x.Rows).Where(x => x.ShopCardId == shopCard.ShopCardId).ToList();
                 foreach (Card card in cards)
                 {
                     int quantity = card.Quantity;
@@ -145,14 +145,9 @@ namespace ElectronicStock.Controllers
                         }
                         else
                         {
-                            quantity = Math.Abs(row.Quantity);
+                            quantity = Math.Abs(savingQuantity);
                             _context.Remove(row);
                         }
-                    }
-
-                    if (quantity == 0)
-                    {
-                        break;
                     }
                 }
 
