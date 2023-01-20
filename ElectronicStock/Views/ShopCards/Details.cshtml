@@ -59,7 +59,16 @@
                 Quantity in shoping card
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Cards.First().Product.Quantity)
+                @Html.DisplayNameFor(model => model.Cards.First().Product.Weight)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cards.First().Product.Dimensions)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cards.First().Product.Guarantee)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cards.First().Product.StorageConditions)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Cards.First().Product.Discount)
@@ -92,7 +101,16 @@
                 @Html.DisplayFor(modelItem => item.Quantity)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Product.Quantity)
+                @Html.DisplayFor(modelItem => item.Product.Weight)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Dimensions)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.Guarantee)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Product.StorageConditions)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Product.Discount)

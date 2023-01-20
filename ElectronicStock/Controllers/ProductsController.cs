@@ -174,7 +174,10 @@ namespace ElectronicStock.Controllers
                     newProduct.ProductTitle = product.ProductTitle;
                     newProduct.Description = product.Description;
                     newProduct.Cost = product.Cost;
-                    newProduct.Quantity = product.Quantity;
+                    newProduct.Weight = product.Weight;
+                    newProduct.Dimensions = product.Dimensions;
+                    newProduct.Guarantee = product.Guarantee;
+                    newProduct.StorageConditions = product.StorageConditions;
                     newProduct.Discount = product.Discount;
                     newProduct.CreditAvailable = product.CreditAvailable;
                     // _context.Update(product);
