@@ -111,7 +111,7 @@ namespace ElectronicStock.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductTitle,Description,Cost,Quantity,Discount,CreateDate,CreditAvailable")] Product product,
+        public async Task<IActionResult> Create([Bind("ProductId,ProductTitle,Description,Cost,Discount,CreateDate,CreditAvailable,Weight,Dimensions,Guarantee,StorageConditions")] Product product,
             IFormFile image)
         {
             if (image != null)
@@ -159,7 +159,7 @@ namespace ElectronicStock.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductTitle,Description,Cost,Quantity,Discount,CreateDate,CreditAvailable")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductTitle,Description,Cost,Discount,CreateDate,CreditAvailable,Weight,Dimensions,Guarantee,StorageConditions")] Product product)
         {
             if (id != product.ProductId)
             {

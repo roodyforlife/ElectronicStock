@@ -59,7 +59,7 @@ namespace ElectronicStock.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductCategoryId,CategoryId,ProductId,CreateDate")] ProductCategory productCategory)
+        public async Task<IActionResult> Create([Bind("ProductCategoryId,CategoryId,ProductId")] ProductCategory productCategory)
         {
             if (ModelState.IsValid)
             {
@@ -95,7 +95,7 @@ namespace ElectronicStock.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductCategoryId,CategoryId,ProductId,CreateDate")] ProductCategory productCategory)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductCategoryId,CategoryId,ProductId")] ProductCategory productCategory)
         {
             if (id != productCategory.ProductCategoryId)
             {

@@ -18,9 +18,6 @@ namespace ElectronicStock.Models
         public string Description { get; set; }
         [Required(ErrorMessage = "Empty field")]
         public int Cost { get; set; }
-        [Display(Name = "Quantity in stock")]
-        [Required(ErrorMessage = "Empty field")]
-        public int Quantity { get ;set; }
         [Required(ErrorMessage = "Empty field")]
         [Display(Name = "Product discount")]
         [Range(0, 99, ErrorMessage = "Must be between 0 and 99")]
@@ -30,7 +27,17 @@ namespace ElectronicStock.Models
         public DateTime CreateDate { get; set; } = DateTime.Now;
         [Display(Name = "Available credit")]
         public bool CreditAvailable { get; set; }
+        [Required(ErrorMessage = "Empty field")]
+        public int Weight { get; set; }
+        [Required(ErrorMessage = "Empty field")]
+        public string Dimensions { get; set; }
+        [Display(Name = "Guarantee (months)")]
+        [Required(ErrorMessage = "Empty field")]
+        public int Guarantee { get; set; }
+        [Display(Name = "Storage conditions")]
+        [Required(ErrorMessage = "Empty field")]
+        public string StorageConditions { get; set; }
         public List<ProductCategory> productCategories { get; set; }
-
+        public List<Row> Rows { get; set; }
     }
 }

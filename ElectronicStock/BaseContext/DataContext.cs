@@ -24,6 +24,7 @@ namespace ElectronicStock.BaseContext
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<ShopCard> ShopCards { get; set; }
+        public DbSet<Row> Rows { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
