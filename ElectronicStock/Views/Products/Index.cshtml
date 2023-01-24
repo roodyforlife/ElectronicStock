@@ -27,6 +27,17 @@
 
     <div class="input-group mb-3">
         <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroup-sizing-default">Guarantee from</span>
+        </div>
+        <input type="number" class="form-control" aria-label="Default" value="@ViewBag.GuaranteeFrom" name="guaranteeFrom" aria-describedby="inputGroup-sizing-default">
+        <div class="input-group-prepend ml-3">
+            <span class="input-group-text" id="inputGroup-sizing-default">Guarantee to</span>
+        </div>
+        <input type="number" class="form-control" value="@ViewBag.GuaranteeTo" aria-label="Default" name="guaranteeTo" aria-describedby="inputGroup-sizing-default">
+    </div>
+
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
             <label class="input-group-text" for="inputGroupSelect01">Sorting</label>
         </div>
         <select class="custom-select" asp-items="ViewBag.Sort" name="sort" id="inputGroupSelect01"></select>

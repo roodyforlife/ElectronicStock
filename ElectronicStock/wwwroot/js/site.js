@@ -1,4 +1,4 @@
-﻿function createPDF() {
+﻿function createPDF(title) {
     var sTable = $('#print').html()
     var style = "<style>";
     style = style + "table {width: 100%;font: 17px Calibri;}";
@@ -10,12 +10,13 @@
 
     var win = window.open('', '', 'height=700,width=700');
     win.document.write('<html><head>');
-    win.document.write(`<title>Report</title>`);
+    win.document.write(`<title>${title}</title>`);
     win.document.write(style);
     win.document.write('</head>');
     win.document.write('<body>');
-    win.document.write(`<h1 style='text-align: center;'>Report</h1>`);
+    win.document.write(`<h1 style='text-align: center;'>${title}</h1>`);
     win.document.write(sTable);
+    win.document.write(`<h4 style='text-align: left;'>Signature: <span style="font-style: italic; color: blue;">Electronik Stock</span></h4>`);
     win.document.write('</body></html>');
     win.document.close();
     win.print();

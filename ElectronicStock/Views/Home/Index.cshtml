@@ -28,7 +28,9 @@ left join ShopCards on ShopCards.ShopCardId = Cards.ShopCardId
 group by ProductTitle, Description, Products.CreateDate" class="btn btn-primary">Запит на отримання товарів в результаті чого буде виведено назву товару, опис, дата створення, кількість на складі, а також кількість замовлень даного товару</a>
     </div>
     <div class="form-group">
-        <a asp-action="Request" asp-controller="Home" asp-route-request="Select Id, Email, CONCAT(Surname,' ',Name , ' ',  Patronymic) as ПIБ, BirthdayDate, DATEDIFF(year, BirthdayDate, GETDATE()) as Age from AspNetUsers" class="btn btn-primary">Запит на отримання користувачів, де буде виведено ідентифікатор користвача, електронна пошта, ПІБ, дата народження та вік користвача (це буде підраховуватися)</a>
+        <a asp-action="Request" asp-controller="Home" asp-route-request="Select Id, Email, CONCAT(Surname,' ',Name , ' ',  Patronymic) as ПIБ, BirthdayDate, DATEDIFF(year, BirthdayDate, GETDATE()) as Age, COUNT(ShopCards.ShopCardId) as 'Count of orders' from AspNetUsers
+left join ShopCards on ShopCards.UserId = AspNetUsers.Id
+group by Id, Email, Surname, Name, Patronymic, AspNetUsers.BirthdayDate" class="btn btn-primary">Запит на отримання користувачів, де буде виведено ідентифікатор користвача, електронна пошта, ПІБ, дата народження, вік користвача (це буде підраховуватися), кількість замволень даного користвача</a>
     </div>
     <div class="form-group">
         <a asp-action="Request" asp-controller="Home" asp-route-request="select ShopCards.ShopCardId, ShopCards.CreateDate, Status, CONCAT(Name, ' ', Surname, ' ', Patronymic) as ПIБ, Email, SUM(Cards.Quantity * (Products.Cost * (100 - Products.Discount) / 100)) as Final_price from ShopCards

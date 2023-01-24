@@ -25,7 +25,7 @@ namespace ElectronicStock.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(string title, int costFrom, int costTo, ProductSort sort = ProductSort.TitleAsc)
+        public async Task<IActionResult> Index(string title, int costFrom, int costTo, int guaranteeFrom, int guaranteeTo, ProductSort sort = ProductSort.TitleAsc)
         {
             IQueryable<Product> products = _context.Products.Include(x => x.productCategories).ThenInclude(x => x.Category)
                 .Include(x => x.Rows);
@@ -40,6 +40,13 @@ namespace ElectronicStock.Controllers
             if(costTo != 0)
             {
                 products = products.Where(x => x.Cost <= costTo);
+            }
+
+            products = products.Where(x => x.Guarantee >= guaranteeFrom);
+
+            if (guaranteeTo != 0)
+            {
+                products = products.Where(x => x.Guarantee <= guaranteeTo);
             }
 
             switch (sort)
@@ -79,6 +86,8 @@ namespace ElectronicStock.Controllers
             ViewBag.ProductTitle = title;
             ViewBag.CostFrom = costFrom;
             ViewBag.CostTo = costTo;
+            ViewBag.GuaranteeFrom = guaranteeFrom;
+            ViewBag.GuaranteeTo = guaranteeTo;
             return View(await products.ToListAsync());
         }
 
