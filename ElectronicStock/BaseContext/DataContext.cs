@@ -28,7 +28,7 @@ namespace ElectronicStock.BaseContext
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-             optionsBuilder.UseSqlServer("Server=DESKTOP-KIV92L3;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;");
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;");
         }
     }
 }

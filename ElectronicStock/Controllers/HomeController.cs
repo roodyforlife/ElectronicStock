@@ -3,6 +3,7 @@ using ElectronicStock.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -22,7 +23,7 @@ namespace ElectronicStock.Controllers
         {
             try
             {
-                string connectionString = $"Server=DESKTOP-KIV92L3;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;";
+                string connectionString = "Server=(localdb)\\mssqllocaldb;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;";
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
@@ -36,7 +37,7 @@ namespace ElectronicStock.Controllers
                         result.Displays[i] = reader.GetName(i);
                     }
 
-                    while (reader.Read()) // построчно считываем данные
+                    while (reader.Read())
                     {
                         string[] value = new string[reader.FieldCount];
                         for (int i = 0; i < reader.FieldCount; i++)
