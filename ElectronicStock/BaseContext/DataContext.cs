@@ -25,10 +25,11 @@ namespace ElectronicStock.BaseContext
         public DbSet<ProductCategory> ProductCategories { get; set; }
         public DbSet<ShopCard> ShopCards { get; set; }
         public DbSet<Row> Rows { get; set; }
+        public DbSet<User> AppUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=ElectronicStock;Trusted_Connection=True;Encrypt=False;");
+            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=Stock;Trusted_Connection=True;Encrypt=False;");
         }
     }
 }

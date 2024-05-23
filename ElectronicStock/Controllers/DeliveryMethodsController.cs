@@ -10,7 +10,10 @@ using ElectronicStock.Models;
 
 namespace ElectronicStock.Controllers
 {
-    public class DeliveryMethodsController : Controller
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DeliveryMethodsController : ControllerBase
     {
         private readonly DataContext _context;
 
@@ -19,78 +22,47 @@ namespace ElectronicStock.Controllers
             _context = context;
         }
 
-        // GET: DeliveryMethods
-        public async Task<IActionResult> Index()
+        // GET: api/DeliveryMethods
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DeliveryMethod>>> GetDeliveryMethods()
         {
-            return View(await _context.DeliveryMethods.ToListAsync());
+            return await _context.DeliveryMethods.ToListAsync();
         }
 
-        // GET: DeliveryMethods/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/DeliveryMethods/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DeliveryMethod>> GetDeliveryMethod(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var deliveryMethod = await _context.DeliveryMethods.FindAsync(id);
 
-            var deliveryMethod = await _context.DeliveryMethods
-                .FirstOrDefaultAsync(m => m.DeliveryMethodId == id);
             if (deliveryMethod == null)
             {
                 return NotFound();
             }
 
-            return View(deliveryMethod);
+            return deliveryMethod;
         }
 
-        // GET: DeliveryMethods/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: DeliveryMethods/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/DeliveryMethods
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DeliveryMethodId,MethodName,CreateDate")] DeliveryMethod deliveryMethod)
+        public async Task<ActionResult<DeliveryMethod>> CreateDeliveryMethod([FromBody] DeliveryMethod deliveryMethod)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(deliveryMethod);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(GetDeliveryMethod), new { id = deliveryMethod.DeliveryMethodId }, deliveryMethod);
             }
-            return View(deliveryMethod);
+            return BadRequest(ModelState);
         }
 
-        // GET: DeliveryMethods/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var deliveryMethod = await _context.DeliveryMethods.FindAsync(id);
-            if (deliveryMethod == null)
-            {
-                return NotFound();
-            }
-            return View(deliveryMethod);
-        }
-
-        // POST: DeliveryMethods/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DeliveryMethodId,MethodName,CreateDate")] DeliveryMethod deliveryMethod)
+        // PUT: api/DeliveryMethods/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditDeliveryMethod(int id, [FromBody] DeliveryMethod deliveryMethod)
         {
             if (id != deliveryMethod.DeliveryMethodId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -102,7 +74,7 @@ namespace ElectronicStock.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DeliveryMethodExists(deliveryMethod.DeliveryMethodId))
+                    if (!DeliveryMethodExists(id))
                     {
                         return NotFound();
                     }
@@ -111,38 +83,25 @@ namespace ElectronicStock.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
-            return View(deliveryMethod);
+            return BadRequest(ModelState);
         }
 
-        // GET: DeliveryMethods/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/DeliveryMethods/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDeliveryMethod(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var deliveryMethod = await _context.DeliveryMethods
-                .FirstOrDefaultAsync(m => m.DeliveryMethodId == id);
+            var deliveryMethod = await _context.DeliveryMethods.FindAsync(id);
             if (deliveryMethod == null)
             {
                 return NotFound();
             }
 
-            return View(deliveryMethod);
-        }
-
-        // POST: DeliveryMethods/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var deliveryMethod = await _context.DeliveryMethods.FindAsync(id);
             _context.DeliveryMethods.Remove(deliveryMethod);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool DeliveryMethodExists(int id)

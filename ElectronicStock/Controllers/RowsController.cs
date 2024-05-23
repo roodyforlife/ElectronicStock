@@ -11,7 +11,10 @@ using System.Threading.Tasks;
 
 namespace ElectronicStock.Controllers
 {
-    public class RowsController : Controller
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class RowsController : ControllerBase
     {
         private readonly DataContext _context;
 
@@ -20,75 +23,48 @@ namespace ElectronicStock.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        // GET: api/Rows
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Row>>> GetRows()
         {
-            var dataContext = _context.Rows.Include(p => p.Product);
-            return View(await dataContext.ToListAsync());
+            return await _context.Rows.Include(p => p.Product).ToListAsync();
         }
 
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Rows/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Row>> GetRow(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var row = await _context.Rows.Include(p => p.Product).FirstOrDefaultAsync(m => m.RowId == id);
 
-            var row = await _context.Rows
-                .Include(p => p.Product)
-                .FirstOrDefaultAsync(m => m.RowId == id);
             if (row == null)
             {
                 return NotFound();
             }
 
-            return View(row);
+            return row;
         }
 
-        public IActionResult Create()
-        {
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle");
-            return View();
-        }
-
+        // POST: api/Rows
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Row row)
+        public async Task<ActionResult<Row>> CreateRow(Row row)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(row);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(GetRow), new { id = row.RowId }, row);
             }
 
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", row.ProductId);
-            return View(row);
+            return BadRequest(ModelState);
         }
 
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var row = await _context.Rows.FindAsync(id);
-            if (row == null)
-            {
-                return NotFound();
-            }
-
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", row.ProductId);
-            return View(row);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Row row)
+        // PUT: api/Rows/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditRow(int id, Row row)
         {
             if (id != row.RowId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -100,7 +76,7 @@ namespace ElectronicStock.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductCategoryExists(row.RowId))
+                    if (!RowExists(row.RowId))
                     {
                         return NotFound();
                     }
@@ -109,22 +85,28 @@ namespace ElectronicStock.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
 
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", row.ProductId);
-            return View(row);
+            return BadRequest(ModelState);
         }
 
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/Rows/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteRow(int id)
         {
             var row = await _context.Rows.FindAsync(id);
+            if (row == null)
+            {
+                return NotFound();
+            }
+
             _context.Rows.Remove(row);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
 
-        private bool ProductCategoryExists(int id)
+        private bool RowExists(int id)
         {
             return _context.Rows.Any(e => e.RowId == id);
         }

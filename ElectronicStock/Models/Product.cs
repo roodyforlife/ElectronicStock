@@ -37,7 +37,7 @@ namespace ElectronicStock.Models
         [Display(Name = "Storage conditions")]
         [Required(ErrorMessage = "Empty field")]
         public string StorageConditions { get; set; }
-        public List<ProductCategory> productCategories { get; set; }
+        public List<ProductCategory> ProductCategories { get; set; }
         public List<Row> Rows { get; set; }
         public List<Card> Cards { get; set; }
     }

@@ -14,7 +14,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ElectronicStock.Controllers
 {
-    public class UsersController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsersController : ControllerBase
     {
         private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
@@ -27,32 +29,33 @@ namespace ElectronicStock.Controllers
             _roleManager = roleManager;
         }
 
-        // GET: Users
-        public async Task<IActionResult> Index(string patronymic, string name, string surname, string email, string gender, UserSort sort = UserSort.EmailAsc)
+        // GET: api/Users
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<User>>> GetUsers(string patronymic, string name, string surname, string email, string gender, UserSort sort = UserSort.EmailAsc)
         {
             IQueryable<User> users = _userManager.Users;
 
-            if (!String.IsNullOrEmpty(patronymic))
+            if (!string.IsNullOrEmpty(patronymic))
             {
                 users = users.Where(x => x.Patronymic.Contains(patronymic));
             }
 
-            if (!String.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 users = users.Where(x => x.Name.Contains(name));
             }
 
-            if (!String.IsNullOrEmpty(surname))
+            if (!string.IsNullOrEmpty(surname))
             {
                 users = users.Where(x => x.Surname.Contains(surname));
             }
 
-            if (!String.IsNullOrEmpty(email))
+            if (!string.IsNullOrEmpty(email))
             {
                 users = users.Where(x => x.Email.Contains(email));
             }
 
-            if (!String.IsNullOrEmpty(gender))
+            if (!string.IsNullOrEmpty(gender))
             {
                 users = users.Where(x => x.Gender == gender);
             }
@@ -88,101 +91,66 @@ namespace ElectronicStock.Controllers
                     break;
             }
 
-            ViewBag.Sort = (List<SelectListItem>)Enum.GetValues(typeof(UserSort)).Cast<UserSort>()
-                .Select(x => new SelectListItem
-                {
-                    Text = x.GetType()
-            .GetMember(x.ToString())
-            .FirstOrDefault()
-            .GetCustomAttribute<DisplayAttribute>()?
-            .GetName(),
-                    Value = x.ToString(),
-                    Selected = (x == sort)
-                }).ToList();
-
-            ViewBag.Name = name;
-            ViewBag.Surname = surname;
-            ViewBag.Patronymic = patronymic;
-            ViewBag.Email = email;
-
-            return View(await users.ToListAsync());
+            return await users.ToListAsync();
         }
 
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(string id)
+        // GET: api/Users/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<User>> GetUser(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _context.AppUsers.FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            return user;
         }
 
-        // GET: Users/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Users
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Patronymic,RegistrationDate,Email,PhoneNumber,Gender,Address,BirthdayDate")] User user)
+        public async Task<ActionResult<User>> CreateUser([Bind("Id,Name,Surname,Patronymic,RegistrationDate,Email,PhoneNumber,Gender,Address,BirthdayDate")] User user)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
             }
 
-            return View(user);
+            return BadRequest(ModelState);
         }
 
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        // DELETE: api/Users/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(string id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var user = await _context.AppUsers.FirstOrDefaultAsync(m => m.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
-        {
-            var user = await _context.Users.FindAsync(id);
             var shopCards = _context.ShopCards.Where(x => x.UserId == user.Id);
             _context.ShopCards.RemoveRange(shopCards);
-            _context.Users.Remove(user);
+            _context.AppUsers.Remove(user);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
 
         private bool TestUserExists(string id)
         {
-            return _context.Users.Any(e => e.Id == id);
+            return _context.AppUsers.Any(e => e.Id == id);
         }
     }
 }

@@ -14,7 +14,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace ElectronicStock.Controllers
 {
-    public class ShopCardsController : Controller
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ShopCardsController : ControllerBase
     {
         private readonly DataContext _context;
         private readonly UserManager<User> _userManager;
@@ -25,59 +28,47 @@ namespace ElectronicStock.Controllers
             _userManager = userManager;
         }
 
-        // GET: ShopCards
-        public async Task<IActionResult> Index()
+        // GET: api/ShopCards
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<ShopCard>>> GetShopCards()
         {
             // Automation
             List<User> users = await _userManager.Users.Include(x => x.ShopCards).ToListAsync();
-            foreach(User user in users)
+            foreach (User user in users)
             {
-                if (user.ShopCards.Where(x => x.Status == "basket").ToList().Count() == 0)
+                if (!user.ShopCards.Any(x => x.Status == "basket"))
                 {
-                    _context.Add(new ShopCard() { UserId = user.Id, Status = "basket"});
+                    _context.Add(new ShopCard { UserId = user.Id, Status = "basket" });
                     await _context.SaveChangesAsync();
                 }
             }
 
-            return View(await _context.ShopCards.Include(x => x.User).ToListAsync());
+            return await _context.ShopCards.Include(x => x.User).ToListAsync();
         }
 
-        // GET: ShopCards/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/ShopCards/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ShopCard>> GetShopCard(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var shopCard = await _context.ShopCards
                 .Include(x => x.User)
                 .Include(x => x.Cards).ThenInclude(x => x.Product)
                 .FirstOrDefaultAsync(m => m.ShopCardId == id);
+
             if (shopCard == null)
             {
                 return NotFound();
             }
 
-            return View(shopCard);
+            return shopCard;
         }
 
-        // GET: ShopCards/Create
-        public IActionResult Create()
-        {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email");
-            return View();
-        }
-
-        // POST: ShopCards/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/ShopCards
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ShopCardId,CreateDate,UserId,Status")] ShopCard shopCard)
+        public async Task<ActionResult<ShopCard>> CreateShopCard(ShopCard shopCard)
         {
             var userShopCards = _context.ShopCards.Where(x => x.UserId == shopCard.UserId && x.Status == "basket").ToList();
-            if(userShopCards.Count != 0 && shopCard.Status == "basket")
+            if (userShopCards.Count != 0 && shopCard.Status == "basket")
             {
                 ModelState.AddModelError("Status", "User already has shop card with status 'basket'");
             }
@@ -86,48 +77,28 @@ namespace ElectronicStock.Controllers
             {
                 _context.Add(shopCard);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(GetShopCard), new { id = shopCard.ShopCardId }, shopCard);
             }
 
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Email", shopCard.UserId);
-            return View(shopCard);
+            return BadRequest(ModelState);
         }
 
-        // GET: ShopCards/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var shopCard = await _context.ShopCards.FindAsync(id);
-            if (shopCard == null)
-            {
-                return NotFound();
-            }
-            return View(shopCard);
-        }
-
-        // POST: ShopCards/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ShopCardId,CreateDate,UserId,Status")] ShopCard shopCard)
+        // PUT: api/ShopCards/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditShopCard(int id, ShopCard shopCard)
         {
             if (id != shopCard.ShopCardId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            var userShopCards = _context.ShopCards.Where(x => x.UserId == shopCard.UserId && x.Status == "basket");
-            if (userShopCards != null && shopCard.Status == "basket")
+            var userShopCards = _context.ShopCards.Where(x => x.UserId == shopCard.UserId && x.Status == "basket").ToList();
+            if (userShopCards.Any() && shopCard.Status == "basket")
             {
                 ModelState.AddModelError("Status", "User already has shop card with status 'basket'");
             }
 
-            if(shopCard.Status == "delivered")
+            if (shopCard.Status == "delivered")
             {
                 var cards = _context.Cards.Include(x => x.Product).ThenInclude(x => x.Rows).Where(x => x.ShopCardId == shopCard.ShopCardId).ToList();
                 foreach (Card card in cards)
@@ -139,14 +110,14 @@ namespace ElectronicStock.Controllers
                         savingQuantity -= quantity;
                         if (savingQuantity > 0)
                         {
-                            quantity = row.Quantity - quantity;
+                            quantity = 0;
                             row.Quantity = savingQuantity;
                             _context.Rows.Update(row);
                         }
                         else
                         {
                             quantity = Math.Abs(savingQuantity);
-                            _context.Remove(row);
+                            _context.Rows.Remove(row);
                         }
                     }
                 }
@@ -172,38 +143,25 @@ namespace ElectronicStock.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
-            return View(shopCard);
+
+            return BadRequest(ModelState);
         }
 
-        // GET: ShopCards/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/ShopCards/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteShopCard(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var shopCard = await _context.ShopCards
-                .FirstOrDefaultAsync(m => m.ShopCardId == id);
+            var shopCard = await _context.ShopCards.FindAsync(id);
             if (shopCard == null)
             {
                 return NotFound();
             }
 
-            return View(shopCard);
-        }
-
-        // POST: ShopCards/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var shopCard = await _context.ShopCards.FindAsync(id);
             _context.ShopCards.Remove(shopCard);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
 
         private bool ShopCardExists(int id)

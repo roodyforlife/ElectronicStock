@@ -10,7 +10,9 @@ using ElectronicStock.Models;
 
 namespace ElectronicStock.Controllers
 {
-    public class DeliveryMethodProductsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class DeliveryMethodProductsController : ControllerBase
     {
         private readonly DataContext _context;
 
@@ -19,87 +21,53 @@ namespace ElectronicStock.Controllers
             _context = context;
         }
 
-        // GET: DeliveryMethodProducts
-        public async Task<IActionResult> Index()
+        // GET: api/DeliveryMethodProducts
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<DeliveryMethodProduct>>> GetDeliveryMethodProducts()
         {
-            var dataContext = _context.DeliveryMethodProducts.Include(d => d.DeliveryMethod).Include(d => d.Product);
-            return View(await dataContext.ToListAsync());
+            return await _context.DeliveryMethodProducts
+                .Include(d => d.DeliveryMethod)
+                .Include(d => d.Product)
+                .ToListAsync();
         }
 
-        // GET: DeliveryMethodProducts/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/DeliveryMethodProducts/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DeliveryMethodProduct>> GetDeliveryMethodProduct(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var deliveryMethodProduct = await _context.DeliveryMethodProducts
                 .Include(d => d.DeliveryMethod)
                 .Include(d => d.Product)
                 .FirstOrDefaultAsync(m => m.DeliveryMethodProductId == id);
+
             if (deliveryMethodProduct == null)
             {
                 return NotFound();
             }
 
-            return View(deliveryMethodProduct);
+            return deliveryMethodProduct;
         }
 
-        // GET: DeliveryMethodProducts/Create
-        public IActionResult Create()
-        {
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName");
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle");
-            return View();
-        }
-
-        // POST: DeliveryMethodProducts/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/DeliveryMethodProducts
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("DeliveryMethodProductId,ProductId,DeliveryMethodId")] DeliveryMethodProduct deliveryMethodProduct)
+        public async Task<ActionResult<DeliveryMethodProduct>> CreateDeliveryMethodProduct([FromBody] DeliveryMethodProduct deliveryMethodProduct)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(deliveryMethodProduct);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(GetDeliveryMethodProduct), new { id = deliveryMethodProduct.DeliveryMethodProductId }, deliveryMethodProduct);
             }
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName", deliveryMethodProduct.DeliveryMethodId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", deliveryMethodProduct.ProductId);
-            return View(deliveryMethodProduct);
+            return BadRequest(ModelState);
         }
 
-        // GET: DeliveryMethodProducts/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var deliveryMethodProduct = await _context.DeliveryMethodProducts.FindAsync(id);
-            if (deliveryMethodProduct == null)
-            {
-                return NotFound();
-            }
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName", deliveryMethodProduct.DeliveryMethodId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", deliveryMethodProduct.ProductId);
-            return View(deliveryMethodProduct);
-        }
-
-        // POST: DeliveryMethodProducts/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("DeliveryMethodProductId,ProductId,DeliveryMethodId")] DeliveryMethodProduct deliveryMethodProduct)
+        // PUT: api/DeliveryMethodProducts/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditDeliveryMethodProduct(int id, [FromBody] DeliveryMethodProduct deliveryMethodProduct)
         {
             if (id != deliveryMethodProduct.DeliveryMethodProductId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -111,7 +79,7 @@ namespace ElectronicStock.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!DeliveryMethodProductExists(deliveryMethodProduct.DeliveryMethodProductId))
+                    if (!DeliveryMethodProductExists(id))
                     {
                         return NotFound();
                     }
@@ -120,42 +88,25 @@ namespace ElectronicStock.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
-            ViewData["DeliveryMethodId"] = new SelectList(_context.DeliveryMethods, "DeliveryMethodId", "MethodName", deliveryMethodProduct.DeliveryMethodId);
-            ViewData["ProductId"] = new SelectList(_context.Products, "ProductId", "ProductTitle", deliveryMethodProduct.ProductId);
-            return View(deliveryMethodProduct);
+            return BadRequest(ModelState);
         }
 
-        // GET: DeliveryMethodProducts/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/DeliveryMethodProducts/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteDeliveryMethodProduct(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var deliveryMethodProduct = await _context.DeliveryMethodProducts
-                .Include(d => d.DeliveryMethod)
-                .Include(d => d.Product)
-                .FirstOrDefaultAsync(m => m.DeliveryMethodProductId == id);
+            var deliveryMethodProduct = await _context.DeliveryMethodProducts.FindAsync(id);
             if (deliveryMethodProduct == null)
             {
                 return NotFound();
             }
 
-            return View(deliveryMethodProduct);
-        }
-
-        // POST: DeliveryMethodProducts/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var deliveryMethodProduct = await _context.DeliveryMethodProducts.FindAsync(id);
             _context.DeliveryMethodProducts.Remove(deliveryMethodProduct);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return NoContent();
         }
 
         private bool DeliveryMethodProductExists(int id)

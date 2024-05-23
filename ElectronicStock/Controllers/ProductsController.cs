@@ -15,7 +15,10 @@ using System.Reflection;
 
 namespace ElectronicStock.Controllers
 {
-    public class ProductsController : Controller
+
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductsController : ControllerBase
     {
         private readonly DataContext _context;
 
@@ -24,20 +27,21 @@ namespace ElectronicStock.Controllers
             _context = context;
         }
 
-        // GET: Products
-        public async Task<IActionResult> Index(string title, int costFrom, int costTo, int guaranteeFrom, int guaranteeTo, ProductSort sort = ProductSort.TitleAsc)
+        // GET: api/Products
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts(string title, int costFrom, int costTo, int guaranteeFrom, int guaranteeTo, ProductSort sort = ProductSort.TitleAsc)
         {
-            IQueryable<Product> products = _context.Products.Include(x => x.productCategories).ThenInclude(x => x.Category)
+            IQueryable<Product> products = _context.Products.Include(x => x.ProductCategories).ThenInclude(x => x.Category)
                 .Include(x => x.Rows);
 
-            if(!String.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(title))
             {
                 products = products.Where(x => x.ProductTitle.Contains(title));
             }
 
             products = products.Where(x => x.Cost >= costFrom);
 
-            if(costTo != 0)
+            if (costTo != 0)
             {
                 products = products.Where(x => x.Cost <= costTo);
             }
@@ -71,59 +75,29 @@ namespace ElectronicStock.Controllers
                     break;
             }
 
-            ViewBag.Sort = (List<SelectListItem>)Enum.GetValues(typeof(ProductSort)).Cast<ProductSort>()
-                .Select(x => new SelectListItem
-                {
-                    Text = x.GetType()
-            .GetMember(x.ToString())
-            .FirstOrDefault()
-            .GetCustomAttribute<DisplayAttribute>()?
-            .GetName(),
-                    Value = x.ToString(),
-                    Selected = (x == sort)
-                }).ToList();
-
-            ViewBag.ProductTitle = title;
-            ViewBag.CostFrom = costFrom;
-            ViewBag.CostTo = costTo;
-            ViewBag.GuaranteeFrom = guaranteeFrom;
-            ViewBag.GuaranteeTo = guaranteeTo;
-            return View(await products.ToListAsync());
+            return await products.ToListAsync();
         }
 
-        // GET: Products/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Products/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Product>> GetProduct(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var product = await _context.Products
-                .Include(x => x.productCategories).ThenInclude(x => x.Category)
+                .Include(x => x.ProductCategories).ThenInclude(x => x.Category)
                 .Include(x => x.Rows)
                 .FirstOrDefaultAsync(m => m.ProductId == id);
+
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(product);
+            return product;
         }
 
-        // GET: Products/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Products/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: api/Products
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductId,ProductTitle,Description,Cost,Discount,CreateDate,CreditAvailable,Weight,Dimensions,Guarantee,StorageConditions")] Product product,
-            IFormFile image)
+        public async Task<ActionResult<Product>> CreateProduct(Product product, IFormFile image)
         {
             if (image != null)
             {
@@ -144,54 +118,40 @@ namespace ElectronicStock.Controllers
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return CreatedAtAction(nameof(GetProduct), new { id = product.ProductId }, product);
             }
-            return View(product);
+            return BadRequest(ModelState);
         }
 
-        // GET: Products/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
-        // POST: Products/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,ProductTitle,Description,Cost,Discount,CreateDate,CreditAvailable,Weight,Dimensions,Guarantee,StorageConditions")] Product product)
+        // PUT: api/Products/5
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditProduct(int id, [FromBody] Product product)
         {
             if (id != product.ProductId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    Product newProduct = _context.Products.FirstOrDefault(x => x.ProductId == id);
-                    newProduct.ProductTitle = product.ProductTitle;
-                    newProduct.Description = product.Description;
-                    newProduct.Cost = product.Cost;
-                    newProduct.Weight = product.Weight;
-                    newProduct.Dimensions = product.Dimensions;
-                    newProduct.Guarantee = product.Guarantee;
-                    newProduct.StorageConditions = product.StorageConditions;
-                    newProduct.Discount = product.Discount;
-                    newProduct.CreditAvailable = product.CreditAvailable;
-                    // _context.Update(product);
+                    var existingProduct = await _context.Products.FindAsync(id);
+                    if (existingProduct == null)
+                    {
+                        return NotFound();
+                    }
+
+                    existingProduct.ProductTitle = product.ProductTitle;
+                    existingProduct.Description = product.Description;
+                    existingProduct.Cost = product.Cost;
+                    existingProduct.Weight = product.Weight;
+                    existingProduct.Dimensions = product.Dimensions;
+                    existingProduct.Guarantee = product.Guarantee;
+                    existingProduct.StorageConditions = product.StorageConditions;
+                    existingProduct.Discount = product.Discount;
+                    existingProduct.CreditAvailable = product.CreditAvailable;
+
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -205,38 +165,24 @@ namespace ElectronicStock.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return NoContent();
             }
-            return View(product);
+            return BadRequest(ModelState);
         }
 
-        // GET: Products/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // DELETE: api/Products/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.ProductId == id);
+            var product = await _context.Products.FindAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
 
-            return View(product);
-        }
-
-        // POST: Products/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return NoContent();
         }
 
         private bool ProductExists(int id)
