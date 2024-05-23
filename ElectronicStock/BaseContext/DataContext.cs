@@ -13,7 +13,7 @@ namespace ElectronicStock.BaseContext
     {
         public DataContext()
         {
-            // Database.EnsureDeleted();
+            //Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 
